@@ -1,0 +1,45 @@
+<section class="mt-4">
+    <div class="container">
+        <form id="prospectAddForm" action="/prospect/add" method="post" style="background-color: rgb(227 216 223 / 15%);" class="p-5">
+            <div class="row">
+                <div class="col-lg-4 col-md-4 col-xs-12 col-sm-12 form-group">
+                   <label for="prospectName">Prospect Name</label> 
+                   <input type="text" name="prospectName" class="form-control" placeholder="Enter prospect Name" />    
+                </div>
+                <div class="col-lg-4 col-md-4 col-xs-12 col-sm-12 form-group">
+                    <label for="prospectOfficalEmail">Prospect Offical Email</label> 
+                    <input type="email" name="prospectOfficalEmail" class="form-control" placeholder="Enter prospect Offical Email." />    
+                </div>
+                <div class="col-lg-4 col-md-4 col-xs-12 col-sm-12 form-group">
+                    <label for="prospectOfficalContact">Prospect Offical Contact</label> 
+                    <input type="text" name="prospectOfficalContact" class="form-control" placeholder="Enter prospect Offical Contact." />    
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-lg-4 col-cd-4 col-sm-12 col-xs-12 form-group">
+                    <label for="prospectCompany">Prospect Company</label>
+                    <select name="prospectCompany" class="form-control">
+                        <option value="">Select Company</option>
+                    </select>
+                </div>
+                <div class="col-lg-4 col-cd-4 col-sm-12 col-xs-12 form-group">
+                    <label for="prospectDesignation">Prospect Designation</label>
+                    <input type="text" name="prospectDesignation" class="form-control">
+                </div>
+                <div class="col-lg-4 col-cd-4 col-sm-12 col-xs-12 form-group">
+                    <label for="prospectProject">Prospect Project</label>
+                    <select name="prospectProject" class="form-control">
+                        <option value="">Select Project</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12 form-group">
+                    <label for="prospectDescription">Prospect Description</label>
+                    <textarea name="prospectDescription" cols="30" rows="10" class="form-control" placeholder="Enter Prospect Description"></textarea>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-sm btn-primary mt-3">ADD</button>
+        </form>
+    </div>
+</section>
