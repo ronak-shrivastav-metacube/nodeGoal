@@ -13,9 +13,9 @@ router.post("/company/add",Company.companyAdd);
 router.get("/company/all",Company.companyShowAll);
 
 // Projects Routes
-router.get("/project/add",Project.companyAdd);
-router.post("/project/add",Project.companyAdd);
-router.get("/project/all",Project.companyShowAll);
+router.get("/project/add",Project.projectAdd);
+router.post("/project/add",Project.projectAdd);
+router.get("/project/all",Project.projectShowAll);
 
 // Prospects Routes
 router.get("/prospect/add",Prospect.companyAdd);
