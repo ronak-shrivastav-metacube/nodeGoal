@@ -1,5 +1,6 @@
 import BaseController from '../BaseController';
 import CompanyModel from '../../models/companyModel';
+import projectModel from '../../models/projectModel';
 import ejs from'ejs';
 import * as fs from 'fs'
 import path from 'path';
@@ -47,10 +48,99 @@ class Company {
     }
 
     async companyShowAll(req,res) {
-        let data = await CompanyModel.find();
-        
+        // let data = await CompanyModel.find();
+        // data.forEach((item) =>{
+        //     var query = projectModel.find({companyId : item._id});
+        //     query.count(function (err, count) {
+        //         if (err) console.log(err)
+        //         else item.projctCount = count
+        //     });
+        // })
+
+        let data = await CompanyModel.aggregate([
+            {
+                $lookup:
+                        {
+                            from: "projects",
+                            let: { "id":"$_id" },
+                            pipeline : [
+                                { 
+                                    $match: 
+                                    { 
+                                        $expr: 
+                                        { 
+                                            $and: 
+                                            [
+                                                {$eq: ["$companyId","$$id"] },
+                                                {$eq: ["$projectStatus","Active"] }
+                                            ]
+                                        } 
+                                    } 
+                                }
+                            ],
+                            as: "activeProjects"
+                        }
+            },
+            {
+                $lookup:
+                        {
+                            from: "projects",
+                            let: { "id":"$_id" },
+                            pipeline : [
+                                { 
+                                    $match: 
+                                    { 
+                                        $expr: 
+                                        { 
+                                            $and: 
+                                            [
+                                                {$eq: ["$companyId","$$id"] },
+                                                {$eq: ["$projectStatus","In-Active"] }
+                                            ]
+                                        } 
+                                    } 
+                                }
+                            ],
+                            as: "inActiveProjects"
+                        }
+            },
+            {
+                $lookup:
+                        {
+                            from: "projects",
+                            let: { "id":"$_id" },
+                            pipeline : [
+                                { 
+                                    $match: 
+                                    { 
+                                        $expr: 
+                                        { 
+                                            $and: 
+                                            [
+                                                {$eq: ["$companyId","$$id"] },
+                                                {$eq: ["$projectStatus","Pospond"] }
+                                            ]
+                                        } 
+                                    } 
+                                }
+                            ],
+                            as: "pospondProjects"
+                        }
+            },
+            {
+                $lookup:
+                        {
+                            from: "prospects",
+                            localField: "_id",
+                            foreignField: "companyId",
+                            as: "prospects"
+                        }
+            }
+        ])
         let content = '';
-        
+        // data.forEach((item)=>{
+        //     console.log(item);        
+        // })
         res.render('pages/company/all.ejs',{data : data},(err,html)=>{content = html.toString()})
         
         BaseController.SHOWVIEW(req,res,content);

@@ -16,10 +16,11 @@ router.get("/company/all",Company.companyShowAll);
 router.get("/project/add",Project.projectAdd);
 router.post("/project/add",Project.projectAdd);
 router.get("/project/all",Project.projectShowAll);
+router.get("/project/edit/:id",Project.projectView);
 
 // Prospects Routes
-router.get("/prospect/add",Prospect.companyAdd);
-router.post("/prospect/add",Prospect.companyAdd);
-router.get("/prospect/all",Prospect.companyShowAll);
+router.get("/prospect/add",Prospect.prospectAdd);
+router.post("/prospect/add",Prospect.prospectAdd);
+router.get("/prospect/all",Prospect.prospectShowAll);
 
 export default router;

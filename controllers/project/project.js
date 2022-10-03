@@ -26,7 +26,7 @@ class Project {
                 projectName : req.body.projectName,
                 companyId : req.body.companyId,
                 projectDescription : req.body.projectDescription,
-                status : "Active"
+                projectStatus : "Active"
             })
 
             let heading = '';
@@ -52,9 +52,38 @@ class Project {
     }
 
     async projectShowAll(req,res) {
-        const data = await projectModel.find().populate("companyId");
-        console.log(data);
-        var content = fs.readFileSync(rootPath+"/views/pages/project/all.ejs").toString()
+        // projectModel.find().populate("companyId").then(p=>console.log(p)).catch(error=>console.log(error));
+        // const projects = await projectModel.find().populate("companyId");
+        let projects = await projectModel.aggregate([
+            {
+                $lookup:
+                        {
+                            from: "prospects",
+                            localField: "_id",
+                            foreignField: "projectId",
+                            as: "prospects"
+                        }
+            }
+        ]);
+        await projectModel.populate(projects,{path : "companyId"});
+
+        var content = '';
+        res.render('pages/project/all.ejs',{projects : projects},(err,html)=>{
+            content = html.toString();
+        });
+        BaseController.SHOWVIEW(req,res,content);
+    }
+
+    async projectView(req,res) 
+    {
+        let array = JSON.parse(BaseController.STRINGSEPARATOR(req.path,"/"))
+        let _id = array.pop();
+
+        let projectData = await projectModel.findById(_id).populate('companyId');
+        let content = '';
+        res.render("pages/project/edit.ejs",{project:projectData},(err,html)=>{
+            content = html.toString();
+        })
         BaseController.SHOWVIEW(req,res,content);
     }
 }

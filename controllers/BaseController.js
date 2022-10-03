@@ -7,7 +7,7 @@ class BaseController {
         if(req.path === "/")
             pageTitle = "Home";
 
-        res.render('index',{content:"<h1>Welcome In CURD APP</h1>", pageTitle : pageTitle,alertMsg : ''})
+        res.render('index',{content:"<h1 class='text-center'><u>Welcome In CURD APP</u></h1><h5 class='text-danger text-center'><u>Click on links mention in menubar for doing further actions.</u></h5>", pageTitle : pageTitle,alertMsg : ''})
     }
     
     static SHOWVIEW(req,res,content)
@@ -18,6 +18,11 @@ class BaseController {
         res.render('index',{content:content, pageTitle:pageTitle})
     }
 
+    static STRINGSEPARATOR(string, separator)
+    {
+        let array = string.split(separator);
+        return JSON.stringify(array);
+    }
 }
 
 export default BaseController;

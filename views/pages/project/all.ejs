@@ -6,15 +6,40 @@
                 <table class="text-center table table-hover table stripped table-sm table-bordered">
                     <thead class="bg-primary text-light align-middle">
                         <tr>
+                            <th colspan="5"><h4 class="text-center">Project Table</h4></th>
+                        </tr>
+                        <tr class="bg-dark">
                             <th>Projects Name</th>
                             <th>Company Name</th>
                             <th>Total Prospects</th>
                             <th>Status</th>
-                            <th>Contacts Emails</th>
-                            <th>Contact Numbers</th>
                             <th>Options</th>
                         </tr>
                     </thead>
+                    <tbody>
+                        <% projects.forEach((project) => { %>
+                            <tr>
+                                <td><%= project.projectName %></td>
+                                <td><%= project.companyId.companyName %></td>
+                                <td><%= project.prospects.length %></td>
+                                <td>
+                                    <%= project.projectStatus %>
+                                    <!-- <select name="projectStatus" class="btn btn-sm btn-success" >
+                                        <option value="Active" <%  if(project.status == "Active"){ 
+                                            %>selected <% } %> > Active </option>
+                                        <option value="In-Active" <%  if(project.status == "In-Active"){ 
+                                            %>selected <% } %> >In-Active</option>
+                                        <option value="Pospend" <%  if(project.status == "Pospend"){ 
+                                            %>selected <% } %> >Pospend</option>
+                                    </select> -->
+                                </td>
+                                <td>
+                                    <a href="/project/edit/<%= project._id %>" class="btn btn-sm btn-success" ><i class="fa fa-edit"></i> Edit</a>
+                                    <button type="button" docid="<%= project._id %>" class="btn btn-sm btn-success" ><i class="fa fa-eye"></i> View</button>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
                 </table>
             </div>
         </div>

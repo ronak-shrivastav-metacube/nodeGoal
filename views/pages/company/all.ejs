@@ -6,6 +6,9 @@
                 <table class="text-center table table-hover table stripped table-sm table-bordered">
                     <thead class="bg-primary text-light align-middle">
                         <tr>
+                            <th colspan="9"><h4 class="text-light text-center">Company Table</h4></th>
+                        </tr>
+                        <tr class="bg-dark">
                             <th rowspan="2">Company Name</th>
                             <th colspan="3">Projects</th>
                             <th rowspan="2">Total Prospects</th>
@@ -14,7 +17,7 @@
                             <th rowspan="2">Offical Contact</th>
                             <th rowspan="2">Options</th>
                         </tr>
-                        <tr>
+                        <tr class="bg-secondary">
                             <th>Active</th>
                             <th>In-Active</th>
                             <th>Pospend</th>
@@ -25,10 +28,10 @@
                         <% data.forEach((item) => { %>
                             <tr>
                                 <td><%= item.companyName %></td>
-                                <td>2</td>
-                                <td>3</td>
-                                <td>5</td>
-                                <td>20</td>
+                                <td><%= item.activeProjects.length %></td>
+                                <td><%= item.inActiveProjects.length %></td>
+                                <td><%= item.pospondProjects.length %></td>
+                                <td><%= item.prospects.length %></td>
                                 <td><%= item.companyStatus %></td>
                                 <td><%= item.companyOfficalEmail %></td>
                                 <td><%= item.companyOfficalContact %></td>
