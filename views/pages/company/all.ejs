@@ -36,7 +36,7 @@
                                 <td><%= item.companyOfficalEmail %></td>
                                 <td><%= item.companyOfficalContact %></td>
                                 <td>
-                                    <button type="button" class="btn btn-sm btn-success"><i class="fa fa-edit"></i> Edit</button>
+                                    <button type="button" onclick="upadeteCompanyData('<%= item._id %>')" class="btn btn-sm btn-success"><i class="fa fa-edit"></i> Edit</button>
                                 </td>
                             </tr>
                         <% }) %>
@@ -45,4 +45,149 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade show" id="myModalCompanyEdit" role="dialog">
+        <div class="modal-dialog">        
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-light justify-content-center">
+                <h4 class="modal-title">Company Edit</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <table class="table tabel-sm table-bordered">
+                            <input type="hidden" name="_id" id="_id" />
+                            <tr>
+                                <th>Company Name</th>
+                                <td colspan="2">
+                                    <input type="text" class="form-control" name="companyName" id="companyName" placeholder="Enter Company Name">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Offical Email</th>
+                                <td colspan="2">
+                                    <input type="text" class="form-control" name="companyOfficalEmail" id="companyOfficalEmail" placeholder="Enter Company Offical Email ID." />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Offical Contact</th>
+                                <td colspan="2">
+                                    <input type="text" class="form-control" name="companyOfficalContact" id="companyOfficalContact" placeholder="Enter Company Offical Contact." />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Status</th>
+                                <td>
+                                    <div class="d-flex justify-content-around">
+                                        <input type="radio" class="form-check-input" id="companyStatusActive" name="companyStatus" value="Active" checked>Active
+                                         &nbsp; <label class="form-check-label" for="companyStatus"></label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex justify-content-around">
+
+                                        <input type="radio" class="form-check-input" id="companyStatusInActive" name="companyStatus" value="In-Active">In-Active
+                                        <label class="form-check-label" for="companyStatus"></label>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table> 
+                    </div>     
+                    </div>
+                </div>
+                <div class="modal-footer bg-danger text-light d-flex justify-content-between">
+                    <button type="button" onclick="saveCompany();" class="btn btn-outline-light"> Update</button>
+                <button type="button" class="btn btn-outline-light" onclick="closemodel();" >Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
+
+<script>
+    function upadeteCompanyData(companyId)
+    {
+        let data = {companyId : companyId};
+        const response = fetch("/company/find",{
+            method : "POST",
+            mode : "cors",
+            cache : "no-cache",
+            credentials: "same-origin",
+            headers : {
+                "Content-Type" : "application/json"
+            },
+            redirect : "follow",
+            referrerPolicy : "no-referrer",
+            body : JSON.stringify(data)
+        }).then(function(response) {
+        return response.json();
+        }).then(function(result){
+
+            document.getElementById("_id").value = result.companyData._id;    
+            document.getElementById("companyName").value = result.companyData.companyName;            
+            document.getElementById("companyOfficalEmail").value = result.companyData.companyOfficalEmail;            
+            document.getElementById("companyOfficalContact").value = result.companyData.companyOfficalContact;            
+
+            if(result.companyData.companyStatus === "Active")
+                document.getElementById("companyStatusActive").checked = true;
+            else
+                document.getElementById("companyStatusInActive").checked = true; 
+
+            const model = document.getElementById('myModalCompanyEdit');
+            model.style.display = "block"
+        });
+    }
+
+    function closemodel()
+    {
+        const model = document.getElementById('myModalCompanyEdit');
+        model.style.display = "none";
+    }
+
+    function saveCompany()
+    {
+        let _id = document.getElementById("_id").value;
+        let companyName = document.getElementById("companyName").value;
+        let companyOfficalEmail = document.getElementById("companyOfficalEmail").value;
+        let companyOfficalContact = document.getElementById("companyOfficalContact").value;
+        let companyStatus = document.getElementsByName('companyStatus');
+
+        var status_value;
+        for(var i = 0; i < companyStatus.length; i++){
+            if(companyStatus[i].checked){
+                status_value = companyStatus[i].value;
+            }
+        }
+
+        let data = {
+            "_id" : _id,
+            "companyName" : companyName,
+            "companyOfficalEmail" : companyOfficalEmail,
+            "companyOfficalContact" : companyOfficalContact,
+            "companyStatus" : status_value,
+        }
+
+        let updateState = fetch("/company/update",{
+            method : "POST",
+            mode : "cors",
+            cache : "no-cache",
+            credentials: "same-origin",
+            headers : {
+                "Content-Type" : "application/json"
+            },
+            redirect : "follow",
+            referrerPolicy : "no-referrer",
+            body : JSON.stringify(data)
+        })
+        .then((result)=>result.json())
+        .then((res)=>{
+            if(res.status == 1)
+                alert("Company Record Updated Successfully!");
+            else
+                alert("Oooppss...Something Error!");    
+            window.location.replace("/company/all");
+       })
+    }
+</script>

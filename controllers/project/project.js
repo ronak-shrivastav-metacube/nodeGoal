@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import BaseController from '../BaseController';
 import projectModel from '../../models/projectModel';
 import companyModel from '../../models/companyModel';
@@ -85,6 +86,57 @@ class Project {
             content = html.toString();
         })
         BaseController.SHOWVIEW(req,res,content);
+    }
+
+    async findProject(req,res)
+    {
+        let projectId = req.body.projectId;
+        let typeAction = req.body.typeAction;
+        let json = '';
+        let projectData = await projectModel.aggregate([
+                {
+                    $match : { _id: mongoose.Types.ObjectId(projectId)}
+                },
+                {
+                    $lookup : {
+                        from: "prospects",
+                        localField: "_id",
+                        foreignField: "projectId",
+                        as: "prospects"
+                    }
+                }
+            ]);
+            await projectModel.populate(projectData,{path:'companyId'});
+        
+
+            if(typeAction === 'view') { json = { "projectData": projectData[0] }; }
+            else {
+                let companies = await companyModel.find();
+                json = { "projectData": projectData[0], companies : companies };
+            }
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify(json, null, 3));
+    }
+
+    async updateProject(req,res)
+    {   
+        let _id = req.body._id;
+        let set = {
+            projectName : req.body.projectName,
+            projectDescription : req.body.projectDescription,
+            companyId : req.body.companyId,
+            projectStatus : req.body.projectStatus
+        };
+        
+        let json = "";
+        try {
+            await projectModel.findByIdAndUpdate(_id,set);
+            json = {status : 1, error : 0};
+        } catch (error) {
+            json = {status : 0, error : 1};
+        }
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(json, null, 3));
     }
 }
 

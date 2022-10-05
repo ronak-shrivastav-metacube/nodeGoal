@@ -145,6 +145,48 @@ class Company {
         
         BaseController.SHOWVIEW(req,res,content);
     }
+
+    async findCompany(req,res)
+    {
+        let companyId = req.body.companyId;
+        let companyData = await CompanyModel.findById(companyId);
+
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ "companyData": companyData }, null, 3));
+    }
+
+    async updateCompany(req,res)
+    {
+        let _id = req.body._id;
+        let companyName = req.body.companyName;
+        let companyOfficalEmail = req.body.companyOfficalEmail;
+        let companyOfficalContact = req.body.companyOfficalContact;
+        let companyStatus = req.body.companyStatus;
+        
+        let set = {
+            companyName : companyName,
+            companyOfficalEmail : companyOfficalEmail,
+            companyOfficalContact : companyOfficalContact,
+            companyStatus : companyStatus,
+        };
+
+        let json = '';
+        try {
+         await CompanyModel.findByIdAndUpdate(_id,set)   
+         json = {
+            status : 1,
+            error : 0
+         }; 
+        } catch (error) {
+            json = {
+                status : 0,
+                error : 1
+            };
+        }
+
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(json, null, 3));
+    }
 }
 
 export default new Company();

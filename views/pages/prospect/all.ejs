@@ -28,10 +28,16 @@
                                 <td><%= prospect.prospectDesignation %></td>
                                 <td><%= prospect.prospectOfficalEmail %></td>
                                 <td><%= prospect.prospectOfficalContact %></td>
-                                <td><%= prospect.prospectStatus%></td>
+                                <td>
+                                    <select name="prospectStatus" id="prospectStatus" onchange="updateProspectStatus('<%= prospect._id%>');" class="btn btn-sm btn-success" >
+                                        <option value="Active" <%  if(prospect.prospectStatus == "Active"){ 
+                                            %>selected <% } %> > Active </option>
+                                        <option value="In-Active" <%  if(prospect.prospectStatus == "In-Active"){ 
+                                            %>selected <% } %> >In-Active</option>
+                                    </select>
+                                </td>
                                 <td>
                                     <a href="/prospect/edit/<%= prospect._id%>" class="btn btn-sm btn-success"><i class="fa fa-edit"></i> Edit</a>
-                                    <a href="/prospect/delete/<%= prospect._id%>" class="btn btn-sm btn-danger"><i class="fa fa-close"></i> Delete</a>
                                 </td>
                             </tr>
                         <% })%>
@@ -41,3 +47,57 @@
         </div>
     </div>
 </section>
+<script>
+    function deleteProspect(prospectId)
+    {
+        let data = {prospectId : prospectId};
+        let status = fetch("/prospect/delete",{
+            method : "POST",
+            mode : "cors",
+            cache : "no-cache",
+            credentials: "same-origin",
+            headers : { "Content-Type" : "application/json" },
+            redirect : "follow",
+            referrerPolicy : "no-referrer",
+            body : JSON.stringify(data)
+        }).then((result)=>result.json())
+        .then((res)=>{
+            if(res.status == 1)
+                alert("Prospect De-Active Successfully!" );
+            else    
+                alert("Ooppss...Something Error!" );
+            window.location.replace("/prospect/all");
+       });
+    }
+
+    function updateProspectStatus(prospectId)
+    {
+        let e = document.getElementById("prospectStatus");
+        let status = e.options[e.selectedIndex].value;
+        let data = {
+            prospectId : prospectId,
+            status : status
+        };
+
+        fetch("/prospect/updateStatus",{
+            method : "POST",
+            mode : "cors",
+            cache : "no-cache",
+            credentials: "same-origin",
+            headers : {
+                "Content-Type" : "application/json"
+            },
+            redirect : "follow",
+            referrerPolicy : "no-referrer",
+            body : JSON.stringify(data) 
+        }).then((result)=>result.json())
+        .then((res)=>{
+           if(res.status == 1)
+            alert("Prospect Status Updated!");
+           else
+            alert("Ooppss...Something Error!");
+        
+           window.location.replace("/prospect/all");
+        });
+    }
+</script>

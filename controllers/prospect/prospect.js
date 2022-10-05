@@ -72,6 +72,34 @@ class Prospect {
         BaseController.SHOWVIEW(req,res,content);
     }
 
+    async prospectDeActive(req,res)
+    {   
+        let _id = req.body.prospectId;
+        let json = '';
+        try {
+            await prospectModel.findByIdAndUpdate(_id,{prospectStatus : "De-Active"})
+            json = {status : 1, error : 0}
+        } catch (error) {
+            json = {status : 1, error : 0}
+        }
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(json, null, 3));
+    }
+
+    async updateStatus(req,res)
+    {
+        let _id = req.body.prospectId;
+        let status = req.body.status;
+        let json = '';
+        try {
+            await prospectModel.findByIdAndUpdate(_id,{prospectStatus : status})
+            json = {status : 1, error : 0}
+        } catch (error) {
+            json = {status : 1, error : 0}
+        }
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(json, null, 3));
+    }
 }
 
 export default new Prospect();

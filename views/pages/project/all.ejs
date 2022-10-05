@@ -34,8 +34,8 @@
                                     </select> -->
                                 </td>
                                 <td>
-                                    <a href="/project/edit/<%= project._id %>" class="btn btn-sm btn-success" ><i class="fa fa-edit"></i> Edit</a>
-                                    <button type="button" docid="<%= project._id %>" class="btn btn-sm btn-success" ><i class="fa fa-eye"></i> View</button>
+                                    <button type="button" class="btn btn-sm btn-success" onclick="getProjectData('<%= project._id %>','update')" ><i class="fa fa-edit"></i> Edit</button>
+                                    <button type="button" id="viewProject" onclick="getProjectData('<%= project._id %>','view')" class="btn btn-sm btn-success" ><i class="fa fa-eye"></i> View</button>
                                 </td>
                             </tr>
                         <% }) %>
@@ -44,4 +44,228 @@
             </div>
         </div>
     </div>
+    
+    <!-- Modal -->
+    <div class="modal fade show" id="myModalProject" role="dialog">
+        <div class="modal-dialog">        
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-light justify-content-center">
+                <h4 class="modal-title">Project <span id="projectName"></span></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row" id="showData" style="display:none">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <table class="table tabel-sm table-bordered">
+                                <tr>
+                                    <th>Company Name</th>
+                                    <td id="companyName"></td>
+                                </tr>
+                                <tr>
+                                    <th>Prospects</th>
+                                    <td id="prospects"></td>
+                                </tr>
+                                <tr>
+                                    <th>Status</th>
+                                    <td id="status"></td>
+                                </tr>
+                                <tr>
+                                    <th>Created Date</th>
+                                    <td id="created_at"></td>
+                                </tr>
+                                <tr>
+                                    <th>Updated Date</th>
+                                    <td id="updated_at"></td>
+                                </tr>
+                                <tr class="bg-danger">
+                                    <th colspan="2" class="text-center text-light">Description</th>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" id="projectDescription"></td>
+                                </tr>
+                            </table> 
+                        </div>     
+                    </div>
+
+                    <div class="row" id="updateData" style="display:none">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <table class="table table-sm table-bordered">
+                                <input type="hidden" id="projectIdInput">
+                                <tr>
+                                    <th>Project Name</th>
+                                    <td colspan="3">
+                                        <input type="text" class="form-control" name="projectName" placeholder="Enter Project Name" id="projectNameInput" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Company</th>
+                                    <td colspan="3">
+                                        <select name="companyId" id="companyId" class="form-control"></select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Status</th>
+                                    <td>
+                                        <div class="d-flex justify-content-around">
+                                            <input type="radio" class="form-check-input" id="projectStatusActive" name="projectStatus" value="Active" checked>Active
+                                             &nbsp; <label class="form-check-label" for="projectStatus"></label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex justify-content-around">
+    
+                                            <input type="radio" class="form-check-input" id="projectStatusInActive" name="projectStatus" value="In-Active">In-Active
+                                            <label class="form-check-label" for="projectStatus"></label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex justify-content-around">
+    
+                                            <input type="radio" class="form-check-input" id="projectStatusPospend" name="projectStatus" value="Pospend">Pospend
+                                            <label class="form-check-label" for="projectStatus"></label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="bg-danger text-light text-center">
+                                    <th colspan="4">Project Description</th>
+                                </tr>
+                                <tr>    
+                                    <td colspan="4">
+                                        <textarea name="projectDescription" id="projectDescriptionTextarea" cols="30" rows="5" class="form-control" placeholder="Enter Project Description..."></textarea>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-danger text-light d-flex justify-content-between">
+                    <button type="button" id="updateProjectBtn" style="display:none" class="btn btn-sm btn-outline-light" onclick="updateAndSavePrpject();"><i class="fa fa-edit"></i> Update</button>
+                <button type="button" class="btn btn-outline-light" onclick="closemodel();" >Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </section>
+
+<script>
+    function getProjectData(projectId, typeAction = '')
+    {
+        document.getElementById("showData").style.display = "none";
+        document.getElementById("updateData").style.display = "none";
+        document.getElementById("updateProjectBtn").style.display = "none";
+        document.getElementById("projectIdInput").value = "";
+        let data = {projectId : projectId, typeAction : typeAction};
+        const response = fetch("/project/find",{
+            method : "POST",
+            mode : "cors",
+            cache : "no-cache",
+            credentials: "same-origin",
+            headers : {
+                "Content-Type" : "application/json"
+            },
+            redirect : "follow",
+            referrerPolicy : "no-referrer",
+            body : JSON.stringify(data)
+        }).then(function(response) {
+        return response.json();
+        }).then(function(result){
+            console.log(result);
+            if(typeAction === 'update')
+            {
+                console.log("update Now!");
+                document.getElementById("updateData").style.display = "block";
+                document.getElementById("projectIdInput").value = result.projectData._id;
+                document.getElementById("projectNameInput").value = result.projectData.projectName;
+                let selectBox = document.getElementById("companyId");
+                let options = '';
+                result.companies.map((company,key)=>{
+                    if(company._id == result.projectData.companyId._id)
+                        options += "<option value='"+company._id+"' selected>"+company.companyName+"</option>";
+
+                    else
+                        options += "<option value='"+company._id+"'>"+company.companyName+"</option>";
+                });
+
+                if(result.projectData.projectStatus === "Active")
+                document.getElementById("projectStatusActive").checked = true;
+            else
+                document.getElementById("projectStatusInActive").checked = true; 
+
+                selectBox.innerHTML = options;
+                document.getElementById("projectDescriptionTextarea").value = result.projectData.projectDescription;
+                
+                document.getElementById("updateProjectBtn").style.display = "block";
+            }
+            else
+            { 
+                console.log("View Only!");
+                document.getElementById("showData").style.display = "block";
+                document.getElementById("projectName").innerHTML = result.projectData.projectName;
+                document.getElementById("companyName").innerHTML = result.projectData.companyId.companyName;
+                document.getElementById("prospects").innerHTML = result.projectData.prospects.length;
+                document.getElementById("status").innerHTML = result.projectData.projectStatus;
+                document.getElementById("projectDescription").innerHTML = result.projectData.projectDescription;
+
+                var st = new Date(result.projectData.createdAt).toLocaleString(undefined, {timeZone: 'Asia/Kolkata'});
+
+                document.getElementById("created_at").innerHTML = st;
+                
+                var us = new Date(result.projectData.updatedAt).toLocaleString(undefined, {timeZone: 'Asia/Kolkata'});
+                document.getElementById("updated_at").innerHTML = us;
+            }
+            const model = document.getElementById('myModalProject');
+            model.style.display = "block"
+        });
+    }
+
+    function updateAndSavePrpject()
+    {
+        var e = document.getElementById("companyId");
+        var companyId = e.options[e.selectedIndex].value;
+
+        let projectStatus = document.getElementsByName('projectStatus');
+
+        var status_value;
+        for(var i = 0; i < projectStatus.length; i++){
+            if(projectStatus[i].checked){
+                status_value = projectStatus[i].value;
+            }
+        }
+
+        let data = {
+            _id : document.getElementById("projectIdInput").value,
+            projectName : document.getElementById("projectNameInput").value,
+            projectDescription : document.getElementById("projectDescriptionTextarea").value,
+            companyId : companyId,
+            projectStatus : status_value
+        };
+
+        let updateProject = fetch("/project/save",{
+            method : "POST",
+            mode : "cors",
+            cache : "no-cache",
+            credentials: "same-origin",
+            headers : {
+                "Content-Type" : "application/json"
+            },
+            redirect : "follow",
+            referrerPolicy : "no-referrer",
+            body : JSON.stringify(data)  
+        }).then((result)=>result.json())
+        .then((res)=>{
+            if(res.status == 1)
+                alert("Project Updated Successfully!");
+            else
+                alert("Ooppss...Something Error!");
+            window.location.replace("/project/all");
+        });
+    }
+
+    function closemodel()
+    {
+        const model = document.getElementById('myModalProject');
+        model.style.display = "none";
+    }
+
+</script>

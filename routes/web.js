@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Router } from 'express';
 const router = express.Router();
 import BaseController from '../controllers/BaseController';
 import Company from '../controllers/company/company';
@@ -11,12 +11,18 @@ router.get("/",BaseController.welcome);
 router.get("/company/add",Company.companyAdd);
 router.post("/company/add",Company.companyAdd);
 router.get("/company/all",Company.companyShowAll);
+router.post("/company/find",Company.findCompany);
+router.post("/company/update",Company.updateCompany);
 
 // Projects Routes
 router.get("/project/add",Project.projectAdd);
 router.post("/project/add",Project.projectAdd);
 router.get("/project/all",Project.projectShowAll);
-router.get("/project/edit/:id",Project.projectView);
+router.post("/project/find",Project.findProject);
+router.post("/project/save",Project.updateProject);
+router.post("/prospect/delete",Prospect.prospectDeActive);
+router.post("/prospect/updateStatus",Prospect.updateStatus);
+// router.get("/project/edit/:id",Project.projectView);
 
 // Prospects Routes
 router.get("/prospect/add",Prospect.prospectAdd);
