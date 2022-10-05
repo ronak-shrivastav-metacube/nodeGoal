@@ -4,6 +4,7 @@ import projectModel from '../../models/projectModel';
 import prospectModel from '../../models/prospectModel';
 import * as fs from 'fs'
 import path from 'path';
+import company from '../company/company';
 const rootPath = path.resolve("./");
 
 class Prospect {
@@ -72,15 +73,29 @@ class Prospect {
         BaseController.SHOWVIEW(req,res,content);
     }
 
-    async prospectDeActive(req,res)
-    {   
-        let _id = req.body.prospectId;
-        let json = '';
+    async prospectFind(req,res)
+    {
+        let prospectId = req.body.prospectId;
+        let prospectData = await prospectModel.findById(prospectId).populate("companyId").populate("projectId");
+
+        let projects = await projectModel.find();
+        let companies = await companyModel.find();
+
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({prospectData : prospectData, projects : projects, companies : companies}, null, 3));   
+    }
+
+    async updateProspect(req,res)
+    {
+        let _id = req.body._id;
+        let set = req.body.data;
+        let json = "";
+
         try {
-            await prospectModel.findByIdAndUpdate(_id,{prospectStatus : "De-Active"})
-            json = {status : 1, error : 0}
+            await prospectModel.findByIdAndUpdate(_id,set)
+            json = {status : 1, error : 0};
         } catch (error) {
-            json = {status : 1, error : 0}
+            json = {status : 0, error : 1};
         }
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify(json, null, 3));

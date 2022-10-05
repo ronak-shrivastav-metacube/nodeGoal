@@ -20,13 +20,14 @@ router.post("/project/add",Project.projectAdd);
 router.get("/project/all",Project.projectShowAll);
 router.post("/project/find",Project.findProject);
 router.post("/project/save",Project.updateProject);
-router.post("/prospect/delete",Prospect.prospectDeActive);
-router.post("/prospect/updateStatus",Prospect.updateStatus);
 // router.get("/project/edit/:id",Project.projectView);
 
 // Prospects Routes
 router.get("/prospect/add",Prospect.prospectAdd);
 router.post("/prospect/add",Prospect.prospectAdd);
 router.get("/prospect/all",Prospect.prospectShowAll);
+router.post("/prospect/find",Prospect.prospectFind);
+router.post("/prospect/updateStatus",Prospect.updateStatus);
+router.post("/prospect/update",Prospect.updateProspect);
 
 export default router;

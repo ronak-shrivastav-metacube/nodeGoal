@@ -37,7 +37,7 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <a href="/prospect/edit/<%= prospect._id%>" class="btn btn-sm btn-success"><i class="fa fa-edit"></i> Edit</a>
+                                    <button type="button" onclick="updateProject('<%= prospect._id%>');" class="btn btn-sm btn-success"><i class="fa fa-edit"></i> Edit</button>
                                 </td>
                             </tr>
                         <% })%>
@@ -46,12 +46,82 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade show" id="myModalProspect" role="dialog">
+        <div class="modal-dialog">        
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-light justify-content-center">
+                <h4 class="modal-title">Prospect Edit</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row" id="updateData">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <table class="table table-sm table-bordered">
+                                <input type="hidden" id="prospectIdInput">
+                                <tr>
+                                    <th>Prospect Name</th>
+                                    <td>
+                                        <input type="text" class="form-control" name="prospectName" placeholder="Enter Prospect Name" id="prospectName" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Offical Email</th>
+                                    <td>
+                                        <input type="email" name="prospectOfficalEmail" id="prospectOfficalEmail" class="form-control" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Offical Contact</th>
+                                    <td>
+                                        <input type="text" name="prospectOfficalContact" id="prospectOfficalContact" class="form-control" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Company</th>
+                                    <td>
+                                        <select name="companyId" id="companyId" class="form-control"></select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Project</th>
+                                    <td>
+                                        <select name="projectId" id="projectId" class="form-control"></select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Prospect Designation</th>
+                                    <td>
+                                        <input type="text" id="prospectDesignation" name="prospectDesignation" class="form-control">
+                                    </td>
+                                </tr>
+                                <tr class="bg-danger text-center text-light">
+                                    <th colspan="2">Prospect Description</th>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <textarea name="prospectDescription" id="prospectDescription" class="form-control" cols="30" rows="4"></textarea>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-danger text-light d-flex justify-content-between">
+                    <button type="button" id="updateProspectBtn" class="btn btn-sm btn-outline-light" onclick="updateAndSaveProspect();"><i class="fa fa-edit"></i> Update</button>
+                <button type="button" class="btn btn-outline-light" onclick="closemodel();" >Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </section>
+
 <script>
-    function deleteProspect(prospectId)
+    function updateProject(prospectId)
     {
         let data = {prospectId : prospectId};
-        let status = fetch("/prospect/delete",{
+        let status = fetch("/prospect/find",{
             method : "POST",
             mode : "cors",
             cache : "no-cache",
@@ -62,11 +132,33 @@
             body : JSON.stringify(data)
         }).then((result)=>result.json())
         .then((res)=>{
-            if(res.status == 1)
-                alert("Prospect De-Active Successfully!" );
-            else    
-                alert("Ooppss...Something Error!" );
-            window.location.replace("/prospect/all");
+            document.getElementById("prospectIdInput").value = res.prospectData._id;
+            document.getElementById("prospectName").value = res.prospectData.prospectName;
+            document.getElementById("prospectOfficalEmail").value = res.prospectData.prospectOfficalEmail;
+            document.getElementById("prospectOfficalContact").value = res.prospectData.prospectOfficalContact;
+            document.getElementById("prospectDesignation").value = res.prospectData.prospectDesignation;
+            document.getElementById("prospectDescription").value = res.prospectData.prospectDescription
+
+            let cmpOpts = '';
+            res.companies.map((company,key)=>{
+                if(res.prospectData.companyId._id === company._id)
+                    cmpOpts += "<option value='"+company._id+"' selected>"+company.companyName+"</option>";
+                else
+                    cmpOpts += "<option value='"+company._id+"'>"+company.companyName+"</option>";
+            });
+            document.getElementById("companyId").innerHTML = cmpOpts;
+
+            let prjctOpts = '';
+            res.projects.map((project,key)=>{
+                if(res.prospectData.projectId._id === project._id)
+                    prjctOpts += "<option value='"+project._id+"' selected>"+project.projectName+"</option>";
+                else
+                    prjctOpts += "<option value='"+project._id+"'>"+project.projectName+"</option>";
+            });
+            document.getElementById("projectId").innerHTML = prjctOpts;
+
+            const model = document.getElementById('myModalProspect');
+            model.style.display = "block"
        });
     }
 
@@ -98,6 +190,53 @@
             alert("Ooppss...Something Error!");
         
            window.location.replace("/prospect/all");
+        });
+    }
+
+    function closemodel()
+    {
+        const model = document.getElementById('myModalProspect');
+        model.style.display = "none";
+    }
+
+    function updateAndSaveProspect()
+    {
+        let e = document.getElementById("companyId");
+        let companyId = e.options[e.selectedIndex].value;
+
+        let ex = document.getElementById("projectId");
+        let projectId = ex.options[ex.selectedIndex].value;
+
+        let _id = document.getElementById("prospectIdInput").value;
+
+        let data = {
+            prospectName : document.getElementById("prospectName").value,
+            prospectOfficalEmail : document.getElementById("prospectOfficalEmail").value,
+            prospectOfficalContact : document.getElementById("prospectOfficalContact").value,
+            prospectDesignation : document.getElementById("prospectDesignation").value,
+            prospectDescription : document.getElementById("prospectDescription").value,
+            companyId : companyId,
+            projectId : projectId,
+        };
+
+        fetch("/prospect/update",{
+            method : "POST",
+            mode : "cors",
+            cache : "no-cache",
+            credentials: "same-origin",
+            headers : {
+                "Content-Type" : "application/json"
+            },
+            redirect : "follow",
+            referrerPolicy : "no-referrer",
+            body : JSON.stringify({_id : _id, data:data}) 
+        }).then((result)=>result.json())
+        .then((res)=>{
+            if(res.status == 1)
+                alert("Update Prospect Successfully!")
+            else
+                alert("Ooppss...Somthing Error!");
+            window.location.replace("/prospect/all");    
         });
     }
 </script>
