@@ -1,9 +1,11 @@
+import mongoose from 'mongoose';
 import BaseController from '../BaseController';
 import CompanyModel from '../../models/companyModel';
 import projectModel from '../../models/projectModel';
 import ejs from'ejs';
 import * as fs from 'fs'
 import path from 'path';
+import companyModel from '../../models/companyModel';
 const rootPath = path.resolve("./");
 
 class Company {
@@ -153,6 +155,15 @@ class Company {
 
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify({ "companyData": companyData }, null, 3));
+    }
+
+    async findRelatedProjects(req,res)
+    {
+        let _id = req.body.companyId;
+        let projectsData = await projectModel.find({companyId : _id})
+
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(projectsData, null, 3));
     }
 
     async updateCompany(req,res)

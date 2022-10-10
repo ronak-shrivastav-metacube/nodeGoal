@@ -19,7 +19,7 @@
             <div class="row mt-3">
                 <div class="col-lg-4 col-cd-4 col-sm-12 col-xs-12 form-group">
                     <label for="prospectCompanyId">Prospect Company</label>
-                    <select name="prospectCompanyId" onChnage="getValueOfSelectedCompany(event)" id="prospectCompany" class="form-control">
+                    <select name="prospectCompanyId" id="prospectCompanyId" onchange="fetchRelatedProjects();" class="form-control">
                         <option value="">Select Company</option>
                         <% compaines.forEach((item)=>{%>
                             <option value="<%= item._id %>"><%= item.companyName %></option>
@@ -32,11 +32,8 @@
                 </div>
                 <div class="col-lg-4 col-cd-4 col-sm-12 col-xs-12 form-group">
                     <label for="prospectProjectId">Prospect Project</label>
-                    <select name="prospectProjectId" class="form-control">
+                    <select name="prospectProjectId" id="prospectProjectId" class="form-control" disabled >
                         <option value="">Select Project</option>
-                        <% projects.forEach((item)=>{%>
-                            <option value="<%= item._id %>"><%= item.projectName %></option>
-                        <%})%>
                     </select>
                     
                 </div>
@@ -52,8 +49,33 @@
     </div>
 </section>
 <script>
-    function getValueOfSelectedCompany(event)
+    function fetchRelatedProjects()
     {
-        console.log("Selected Company : ",event);
+        let e = document.getElementById("prospectCompanyId");
+        let companyId = e.options[e.selectedIndex].value;
+        
+        
+
+        fetch("/company/findRelatedProjects",{
+            method : "POST",
+            mode : "cors",
+            cache : "no-cache",
+            credentials: "same-origin",
+            headers : {
+                "Content-Type" : "application/json"
+            },
+            redirect : "follow",
+            referrerPolicy : "no-referrer",
+            body : JSON.stringify({companyId:companyId})   
+        }).then((result)=>result.json())
+        .then((res)=>{
+            let projects = '';
+            projects += "<option value=''>Select Project</option>";
+            res.map((item,key)=>{
+                projects += "<option value='"+item._id+"'>"+item.projectName+"</option>";
+            })
+            document.getElementById("prospectProjectId").removeAttribute("disabled");
+            document.getElementById("prospectProjectId").innerHTML = projects;
+        });
     }
-    </script>
+</script>

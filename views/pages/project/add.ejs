@@ -9,7 +9,7 @@
                 </div>
                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 form-group">
                     <label for="companyId">Select Related Company </label>
-                    <select name="companyId" required class="form-control">
+                    <select name="companyId" id="companyId" required class="form-control">
                         <option value="">Select Company</option>
                         <% companies.forEach((item)=>{%>
                             <option value="<%= item._id %>"><%= item.companyName %></option>

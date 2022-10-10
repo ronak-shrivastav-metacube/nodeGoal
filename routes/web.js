@@ -13,6 +13,7 @@ router.post("/company/add",Company.companyAdd);
 router.get("/company/all",Company.companyShowAll);
 router.post("/company/find",Company.findCompany);
 router.post("/company/update",Company.updateCompany);
+router.post("/company/findRelatedProjects",Company.findRelatedProjects);
 
 // Projects Routes
 router.get("/project/add",Project.projectAdd);
